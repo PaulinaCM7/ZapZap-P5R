@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# ZapZap P5R — lanzador para Linux. Toda la lógica está en p5r_mod/launcher.py
+# (la misma que usa Windows). Ayuda: zapzap-p5r --help
+HERE="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+exec python3 "$HERE/p5r_mod/launcher.py" "$@"

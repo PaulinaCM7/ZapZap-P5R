@@ -1,0 +1,1396 @@
+/*
+ * ZapZap P5R — estética inspirada en Persona 5 Royal.
+ *
+ * - Los colores de WhatsApp se cambian sobrescribiendo sus variables CSS
+ *   (lo hace p5r.js, que detecta en qué selectores las define WhatsApp).
+ * - Las reglas de tema van bajo `html.p5r`: quitar esa clase devuelve el
+ *   aspecto original al instante.
+ * - Los componentes propios (.p5r-*) siempre usan este estilo, con o sin tema.
+ */
+
+:root {
+  --p5-red: #e60012;
+  --p5-red-hot: #ff1f3d;
+  --p5-red-deep: #8f000c;
+  --p5-black: #0b0b0b;
+  --p5-ink: #161616;
+  --p5-ash: #2a2a2a;
+  --p5-white: #f6f4ef;
+  --p5-gold: #ffcf3f;
+  --p5-font-display: "Anton", "Bebas Neue", Impact, "Arial Black", sans-serif;
+  --p5-font-condensed: "Bebas Neue", "Anton", "Arial Narrow", Impact, sans-serif;
+  --p5-font-type: "Special Elite", "Courier New", monospace;
+  --p5-halftone: radial-gradient(circle, rgba(230, 0, 18, 0.22) 1.1px, transparent 1.5px);
+  --p5-halftone-dark: radial-gradient(circle, rgba(0, 0, 0, 0.32) 1.3px, transparent 1.8px);
+  --p5-jag: polygon(0 4%, 3% 0, 52% 3%, 100% 0, 98% 52%, 100% 100%, 46% 96%, 2% 100%, 0 48%);
+  --p5-bar: polygon(1.5% 0, 97% 7%, 100% 100%, 0 93%);
+  --p5-bar-arrow: polygon(1.5% 0, 91% 5%, 100% 50%, 91% 95%, 0 93%);
+}
+
+/* ------------------------------------------------------------------ TEMA */
+
+html.p5r body,
+html.p5r #app {
+  background-color: #000 !important;
+}
+
+html.p5r ::selection {
+  background: var(--p5-red);
+  color: #fff;
+}
+
+html.p5r ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html.p5r ::-webkit-scrollbar-track {
+  background: var(--p5-black);
+}
+
+html.p5r ::-webkit-scrollbar-thumb {
+  background: var(--p5-red);
+  border: 2px solid var(--p5-black);
+}
+
+/* Panel de chats */
+html.p5r #side {
+  border-right: 3px solid var(--p5-red) !important;
+}
+
+html.p5r #side header {
+  border-bottom: 3px solid var(--p5-red) !important;
+}
+
+html.p5r #app h1 {
+  font-family: var(--p5-font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transform: skewX(-8deg) rotate(-2deg);
+  text-shadow: 3px 3px 0 var(--p5-red);
+}
+
+/*
+ * Lista de chats como la del teléfono del juego: panel rojo, cada chat en
+ * una barra negra inclinada con borde blanco, foto en marco blanco ladeado,
+ * nombre en etiqueta blanca y el último mensaje en blanco. El chat activo (o
+ * bajo el ratón) se vuelve una flecha roja. Las partes las marca p5r.js con
+ * atributos data-p5r-* (por geometría, no por clases de WhatsApp).
+ */
+html.p5r #pane-side {
+  --WDS-surface-default: transparent !important;
+  --WDS-surface-highlight: transparent !important;
+  --WDS-surface-pressed: transparent !important;
+  --WDS-background-wash-plain: transparent !important;
+  --panel-background: transparent !important;
+  background-color: #b3000f !important;
+  background-image:
+    var(--p5-halftone-dark),
+    linear-gradient(175deg, #d10016 0%, #9e000d 100%) !important;
+  background-size: 11px 11px, auto !important;
+}
+
+html.p5r #pane-side [data-p5r-row] {
+  isolation: isolate;
+  background-color: transparent !important;
+}
+
+html.p5r #pane-side [data-p5r-row][data-p5r-static] {
+  position: relative;
+}
+
+html.p5r #pane-side [data-p5r-row] div:not([data-p5r-avatar]):not([data-p5r-avatar] *) {
+  background-color: transparent !important;
+}
+
+html.p5r #pane-side [data-p5r-row]::before,
+html.p5r #pane-side [data-p5r-row]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  clip-path: var(--p5-bar);
+  transition: clip-path 0.12s ease, background-color 0.12s ease;
+}
+
+/* Borde blanco */
+html.p5r #pane-side [data-p5r-row]::before {
+  inset: 5px 10px 3px 4px;
+  background: var(--p5-white);
+}
+
+/* Barra negra */
+html.p5r #pane-side [data-p5r-row]::after {
+  inset: 8px 14px 6px 8px;
+  background: var(--p5-black);
+}
+
+html.p5r #pane-side [data-p5r-row]:hover::before,
+html.p5r #pane-side [data-p5r-row]:has([aria-selected="true"])::before,
+html.p5r #pane-side [data-p5r-row][aria-selected="true"]::before {
+  background: #000;
+  clip-path: var(--p5-bar-arrow);
+}
+
+html.p5r #pane-side [data-p5r-row]:hover::after,
+html.p5r #pane-side [data-p5r-row]:has([aria-selected="true"])::after,
+html.p5r #pane-side [data-p5r-row][aria-selected="true"]::after {
+  background: #ff1430;
+  clip-path: var(--p5-bar-arrow);
+}
+
+html.p5r #pane-side [data-p5r-avatar] {
+  border-radius: 0 !important;
+  overflow: hidden;
+  outline: 3px solid var(--p5-white);
+  background: var(--p5-white);
+  transform: rotate(-6deg) skewX(-5deg);
+  box-shadow: 4px 4px 0 #000;
+}
+
+html.p5r #pane-side [data-p5r-avatar] * {
+  border-radius: 0 !important;
+}
+
+/* Fotos a color; en blanco y negro al pasar el ratón */
+html.p5r #pane-side [data-p5r-avatar] img {
+  filter: none;
+  transition: filter 0.15s ease;
+}
+
+html.p5r #pane-side [data-p5r-row]:hover [data-p5r-avatar] img {
+  filter: grayscale(1) contrast(1.15);
+}
+
+html.p5r #pane-side [data-p5r-name] {
+  display: inline-block;
+  max-width: 100%;
+  padding: 1px 8px 0 6px;
+  background: var(--p5-white);
+  color: #000 !important;
+  font-family: var(--p5-font-condensed) !important;
+  font-size: 17px !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.05em;
+  transform: rotate(-2deg) skewX(-8deg);
+  box-shadow: 3px 3px 0 #000;
+}
+
+html.p5r #pane-side [data-p5r-name] * {
+  color: #000 !important;
+}
+
+html.p5r #pane-side [data-p5r-time] {
+  flex-shrink: 0;
+  min-width: max-content;
+  margin-right: 10px;
+  white-space: nowrap;
+  overflow: visible;
+  padding: 0 4px;
+  background: #000;
+  color: #fff !important;
+  outline: 2px solid var(--p5-white);
+  font-family: var(--p5-font-display) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em;
+  transform: rotate(3deg);
+}
+
+html.p5r #pane-side [data-p5r-preview],
+html.p5r #pane-side [data-p5r-preview] * {
+  color: #fff !important;
+}
+
+html.p5r #pane-side [data-p5r-preview] {
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* Conversación: panel rojo como el del juego */
+html.p5r #main {
+  background-color: #a8000e !important;
+  background-image:
+    var(--p5-halftone-dark),
+    repeating-linear-gradient(-58deg, transparent 0 40px, rgba(0, 0, 0, 0.1) 40px 70px),
+    radial-gradient(ellipse at 100% 0%, rgba(255, 40, 60, 0.35), transparent 60%),
+    radial-gradient(ellipse at 0% 100%, rgba(0, 0, 0, 0.45), transparent 55%) !important;
+  background-size: 12px 12px, auto, auto, auto !important;
+}
+
+/*
+ * Mensajes como cuadros de texto del juego, sin rayo: dos rectángulos
+ * encimados — caja negra inclinada y un rectángulo blanco detrás que asoma
+ * abajo y a un lado — con el texto blanco centrado en negrita. En los grupos,
+ * el nombre de quien escribe va en una etiqueta blanca sobre el borde de la
+ * caja. Los de otros a la izquierda y los tuyos a la derecha (lo da WhatsApp),
+ * los tuyos en espejo. Medidas en px para que no se deformen con el largo del
+ * mensaje.
+ */
+html.p5r [data-p5r-bubble] {
+  position: relative;
+  isolation: isolate;
+  overflow: visible !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #fff;
+}
+
+/* Espacio entre mensajes para que el recorte, el rayo y la foto agrandada no
+   se encimen con el mensaje de al lado. No se toca el relleno de la burbuja:
+   moverlo descuadra la hora y los estados que WhatsApp dibuja dentro. */
+html.p5r #main [data-p5r-msg] {
+  margin-top: 7px !important;
+  margin-bottom: 13px !important;
+}
+
+html.p5r [data-p5r-bubble]:not([data-p5r-media]) {
+  min-width: 150px;
+}
+
+html.p5r [data-p5r-bubble]:not([data-p5r-media]) [data-pre-plain-text] {
+  text-align: center;
+}
+
+html.p5r [data-p5r-bubble] .selectable-text,
+html.p5r [data-p5r-bubble] [data-pre-plain-text] {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+html.p5r [data-p5r-bubble]::before,
+html.p5r [data-p5r-bubble]::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Recibidos — rectángulo blanco detrás (asoma abajo a la derecha) */
+html.p5r [data-p5r-bubble="in"]::before {
+  inset: -2px -18px -13px -14px;
+  background: var(--p5-white);
+  clip-path: polygon(18px 0, 100% 4px, calc(100% - 16px) 100%, 0 calc(100% - 2px));
+}
+
+/* Recibidos — caja negra inclinada («/») */
+html.p5r [data-p5r-bubble="in"]::after {
+  inset: -6px -10px -6px -10px;
+  background: var(--p5-black);
+  clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+}
+
+/* Tuyos — lo mismo en espejo */
+html.p5r [data-p5r-bubble="out"]::before {
+  inset: -2px -14px -13px -18px;
+  background: var(--p5-white);
+  clip-path: polygon(calc(100% - 18px) 0, 0 4px, 16px 100%, 100% calc(100% - 2px));
+}
+
+html.p5r [data-p5r-bubble="out"]::after {
+  inset: -6px -10px -6px -10px;
+  background: var(--p5-black);
+  clip-path: polygon(calc(100% - 16px) 0, 0 0, 16px 100%, 100% 100%);
+}
+
+/*
+ * Nombre de quien escribe (grupos): etiqueta blanca con letras negras, ladeada,
+ * montada sobre el borde de arriba de la caja (como en la lista de chats). En
+ * los stickers WhatsApp lo pone en una pastilla con fondo: se le quita, para
+ * que quede solo la etiqueta.
+ */
+html.p5r #main [data-p5r-msg] [data-testid="author"]:not([data-testid="quoted-message"] *) {
+  display: inline-block;
+  max-width: 100%;
+  padding: 1px 10px 0 8px !important;
+  background: var(--p5-white) !important;
+  border-radius: 0 !important;
+  font-family: var(--p5-font-condensed) !important;
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transform: translate(-6px, -13px) rotate(-2deg) skewX(-8deg);
+  box-shadow: 3px 3px 0 #000;
+}
+
+html.p5r #main [data-p5r-msg] [data-testid="author"]:not([data-testid="quoted-message"] *),
+html.p5r #main [data-p5r-msg] [data-testid="author"]:not([data-testid="quoted-message"] *) * {
+  color: #0b0b0b !important;
+}
+
+/* Fuera de una caja (stickers) no hay borde sobre el cual montarla: no sube. */
+html.p5r #main [data-p5r-msg] [data-testid="author"]:not([data-testid="quoted-message"] *):not([data-p5r-bubble] *) {
+  transform: rotate(-2deg) skewX(-8deg);
+}
+
+html.p5r #main [data-p5r-msg] :has(> [data-testid="author"]):not([data-testid="quoted-message"] *) {
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+/* Imágenes y videos: marco negro grueso con borde blanco, ladeado */
+html.p5r [data-p5r-bubble][data-p5r-media] {
+  transform: rotate(-1.6deg);
+}
+
+html.p5r [data-p5r-bubble="out"][data-p5r-media] {
+  transform: rotate(1.4deg);
+}
+
+html.p5r [data-p5r-bubble][data-p5r-media]::before {
+  inset: -8px -15px -17px -11px;
+  background: var(--p5-white);
+  clip-path: polygon(6px 0, 100% 8px, calc(100% - 6px) 100%, 0 calc(100% - 6px));
+}
+
+html.p5r [data-p5r-bubble][data-p5r-media]::after {
+  inset: -5px -8px -8px -6px;
+  background: var(--p5-black);
+  clip-path: polygon(4px 0, 100% 4px, calc(100% - 4px) 100%, 0 calc(100% - 4px));
+}
+
+html.p5r [data-p5r-bubble][data-p5r-media],
+html.p5r [data-p5r-bubble][data-p5r-media] * {
+  border-radius: 0 !important;
+}
+
+/* Foto de quien escribe (grupos): el mismo marco que en la lista de chats —
+   cuadro ladeado con borde blanco y sombra negra; a color, gris al pasar el ratón. */
+html.p5r #main [data-p5r-msg-avatar] {
+  border-radius: 0 !important;
+  overflow: hidden;
+  outline: 3px solid var(--p5-white);
+  background: var(--p5-white);
+  transform: translateX(-6px) rotate(-6deg) skewX(-5deg);
+  box-shadow: 4px 4px 0 3px #000;
+}
+
+/* Fotos siempre por encima: ni burbujas, ni rayos, ni marcos las tapan. La
+   foto vive en una capa aparte de la burbuja (data-testid="group-chat-
+   profile-picture", que es sticky: no se le cambia la posición). */
+html.p5r #main [data-p5r-msg-avatar]:not([data-testid="group-chat-profile-picture"]) {
+  position: relative;
+}
+
+html.p5r #main [data-p5r-msg-avatar],
+html.p5r #main [data-testid="group-chat-profile-picture"] {
+  z-index: 1000 !important;
+}
+
+/* La lista de mensajes se vuelve su propia capa: así el z-index alto de las
+   fotos no puede salirse de ella ni tapar menús o visores de WhatsApp. La
+   lista ya recorta su contenido (overflow), así que no cambia nada más. */
+html.p5r #main [data-testid="conversation-panel-messages"] {
+  isolation: isolate;
+}
+
+/* Solo para comprobaciones (diagnóstico y pruebas): que los rayos y recortes
+   cuenten al preguntar «qué hay en este punto». */
+html.p5r-hit [data-p5r-bubble]::before,
+html.p5r-hit [data-p5r-bubble]::after {
+  pointer-events: auto !important;
+}
+
+html.p5r #main :has(> [data-testid="group-chat-profile-picture"]),
+html.p5r #main :has(> * > [data-testid="group-chat-profile-picture"]),
+html.p5r #main :has(> * > * > [data-testid="group-chat-profile-picture"]) {
+  /* La capa absoluta que contiene la foto también sube (si no, el mensaje de
+     al lado, que va después, se pinta encima). p5r.js hace lo mismo a
+     cualquier profundidad. */
+  z-index: 1000 !important;
+}
+
+html.p5r #main [data-p5r-msg-avatar] * {
+  border-radius: 0 !important;
+}
+
+html.p5r #main [data-p5r-msg-avatar] img {
+  filter: none;
+  transition: filter 0.15s ease;
+}
+
+html.p5r #main [data-p5r-msg]:hover [data-p5r-msg-avatar] img,
+html.p5r #main [data-p5r-msg-avatar]:hover img {
+  filter: grayscale(1) contrast(1.15);
+}
+
+html.p5r #main [data-icon*="tail"] {
+  display: none !important;
+}
+
+html.p5r #main header {
+  background: linear-gradient(100deg,
+      var(--p5-red) 0 62%,
+      var(--p5-black) 62.2% 64.5%,
+      #b3000f 64.7% 100%) !important;
+  border-bottom: 3px solid #000 !important;
+  box-shadow: 0 3px 0 var(--p5-red) !important;
+}
+
+html.p5r #main header,
+html.p5r #main header * {
+  color: #fff !important;
+}
+
+html.p5r #main header span[dir="auto"] {
+  font-family: var(--p5-font-condensed) !important;
+  font-size: 1.15em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #000;
+}
+
+html.p5r #main footer {
+  border-top: 3px solid var(--p5-red) !important;
+}
+
+html.p5r #main footer [contenteditable="true"] {
+  caret-color: var(--p5-red-hot);
+}
+
+/* Menús desplegables de WhatsApp */
+html.p5r #app [role="menu"] {
+  border: 2px solid var(--p5-red) !important;
+  box-shadow: 5px 5px 0 #000 !important;
+}
+
+/* ------------------------------------------------------- COMPONENTES P5R */
+
+.p5r-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  font-family: var(--p5-font-condensed);
+}
+
+.p5r-layer > * {
+  pointer-events: auto;
+}
+
+.p5r-hidden {
+  display: none !important;
+}
+
+/* Botón «tarjeta» sobre el encabezado del chat */
+.p5r-chat-btn {
+  position: fixed;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--p5-white);
+  background: var(--p5-black);
+  color: var(--p5-white);
+  cursor: pointer;
+  transform: rotate(-7deg);
+  box-shadow: 3px 3px 0 var(--p5-red);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.p5r-chat-btn:hover,
+.p5r-chat-btn:focus-visible {
+  background: var(--p5-red);
+  transform: rotate(4deg) scale(1.08);
+  outline: none;
+}
+
+.p5r-chat-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.p5r-chat-btn[data-count]::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -9px;
+  min-width: 16px;
+  padding: 1px 3px;
+  background: var(--p5-gold);
+  color: #000;
+  font: 700 11px/14px var(--p5-font-condensed);
+  border: 1px solid #000;
+  transform: rotate(10deg);
+}
+
+/* Aviso fijo arriba de la conversación */
+.p5r-banner {
+  position: fixed;
+  display: flex;
+  align-items: stretch;
+  max-width: min(560px, 70vw);
+  border: 0;
+  padding: 0;
+  background: none;
+  transform: translateX(-50%) rotate(-1.2deg);
+  filter: drop-shadow(4px 4px 0 #000);
+  transition: transform 0.15s ease;
+  font-family: var(--p5-font-condensed);
+}
+
+.p5r-banner:not([data-min]):hover {
+  transform: translateX(-50%) rotate(0.6deg) scale(1.03);
+}
+
+.p5r-banner-main {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Botón «–» para minimizar el aviso */
+.p5r-banner-min {
+  align-self: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  padding: 0;
+  border: 2px solid var(--p5-white);
+  background: #000;
+  color: #fff;
+  font: 22px/1 var(--p5-font-display);
+  cursor: pointer;
+  transform: rotate(6deg);
+}
+
+.p5r-banner-min:hover,
+.p5r-banner-min:focus-visible {
+  background: var(--p5-red);
+  outline: none;
+}
+
+/* Minimizado: una etiqueta pequeña en la esquina derecha del chat */
+.p5r-banner[data-min] {
+  transform: translateX(-100%) rotate(-3deg);
+}
+
+.p5r-banner[data-min]:hover {
+  transform: translateX(-100%) rotate(0deg) scale(1.06);
+}
+
+.p5r-banner-mini {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 2px 8px;
+  border: 2px solid var(--p5-white);
+  background: var(--p5-red);
+  color: #fff;
+  font: 17px/1 var(--p5-font-display);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.p5r-banner-mini svg {
+  width: 16px;
+  height: 16px;
+}
+
+.p5r-banner[data-state="today"] .p5r-banner-mini {
+  background: var(--p5-gold);
+  color: #000;
+}
+
+.p5r-banner-tag {
+  background: var(--p5-white);
+  color: #000;
+  padding: 6px 12px 4px 10px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.p5r-banner-title {
+  background: var(--p5-black);
+  color: var(--p5-white);
+  padding: 6px 16px 4px 18px;
+  margin-left: -8px;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  clip-path: polygon(6% 0, 100% 0, 96% 100%, 0 100%);
+}
+
+.p5r-banner-count {
+  background: var(--p5-red);
+  color: #fff;
+  padding: 4px 16px 2px 18px;
+  margin-left: -10px;
+  font-family: var(--p5-font-display);
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  clip-path: polygon(10% 0, 100% 0, 92% 100%, 0 100%);
+}
+
+.p5r-banner[data-state="today"] .p5r-banner-count {
+  background: var(--p5-gold);
+  color: #000;
+  animation: p5r-pulse 1.2s ease-in-out infinite;
+}
+
+.p5r-banner[data-state="past"] {
+  opacity: 0.75;
+}
+
+.p5r-banner[data-state="past"] .p5r-banner-count {
+  background: var(--p5-ash);
+}
+
+.p5r-banner-more {
+  align-self: center;
+  margin-left: 6px;
+  padding: 2px 6px;
+  background: var(--p5-gold);
+  color: #000;
+  font-size: 13px;
+  transform: rotate(8deg);
+}
+
+@keyframes p5r-pulse {
+  50% {
+    filter: brightness(1.25);
+  }
+}
+
+/*
+ * Días pendientes en la lista de chats. En modo normal es lo único que se
+ * agrega: una etiqueta discreta con el verde de WhatsApp en la esquina de la
+ * foto. En modo Persona, una etiqueta roja ladeada.
+ */
+.p5r-list-badge {
+  position: fixed;
+  min-width: 22px;
+  height: 17px;
+  margin: 0;
+  padding: 0 5px;
+  border: 1.5px solid #1daa61;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #1b8755;
+  font: 700 11px/14px "Inter", "Noto Sans", "Segoe UI", sans-serif;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.p5r-list-badge[data-state="today"] {
+  background: #1daa61;
+  color: #ffffff;
+}
+
+html.p5r .p5r-list-badge {
+  height: auto;
+  padding: 1px 6px 0;
+  border: 2px solid #000;
+  border-radius: 0;
+  background: var(--p5-red);
+  color: #fff;
+  font: 14px/16px var(--p5-font-display);
+  letter-spacing: 0.04em;
+  transform: rotate(-8deg);
+  box-shadow: 2px 2px 0 var(--p5-white);
+}
+
+html.p5r .p5r-list-badge[data-state="today"] {
+  background: var(--p5-gold);
+  color: #000;
+}
+
+.p5r-actions-inline {
+  display: contents;
+}
+
+/* Modales */
+.p5r-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    var(--p5-halftone) 0 0 / 9px 9px,
+    rgba(0, 0, 0, 0.82);
+  animation: p5r-fade 0.15s ease-out;
+}
+
+@keyframes p5r-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes p5r-slam {
+  from {
+    transform: scale(1.25) rotate(-6deg);
+    opacity: 0;
+  }
+}
+
+.p5r-modal {
+  position: relative;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: var(--p5-black);
+  color: var(--p5-white);
+  border: 3px solid var(--p5-white);
+  box-shadow: 10px 10px 0 var(--p5-red), -4px -4px 0 #000;
+  padding: 22px 22px 18px;
+  transform: rotate(-1deg);
+  animation: p5r-slam 0.22s cubic-bezier(0.2, 1.6, 0.4, 1);
+  font-family: var(--p5-font-condensed);
+}
+
+.p5r-modal-tag {
+  display: inline-block;
+  margin: -8px 0 14px -6px;
+  padding: 4px 18px 2px 12px;
+  background: var(--p5-red);
+  color: #fff;
+  font: 22px/1.1 var(--p5-font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: skewX(-12deg) rotate(-2deg);
+  box-shadow: 4px 4px 0 #000;
+}
+
+.p5r-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--p5-white);
+  background: #000;
+  color: #fff;
+  font: 18px/1 var(--p5-font-display);
+  cursor: pointer;
+  transform: rotate(8deg);
+  /* Encima del encabezado rojo del panel, que antes lo tapaba. */
+  z-index: 3;
+}
+
+.p5r-close:hover {
+  background: var(--p5-red);
+}
+
+.p5r-panel > .p5r-close {
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  font-size: 20px;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.p5r-field {
+  display: block;
+  margin: 0 0 12px;
+}
+
+.p5r-field > span {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 10px 0 6px;
+  background: var(--p5-white);
+  color: #000;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+}
+
+.p5r-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 2px solid var(--p5-white);
+  background: #fff;
+  color: #000;
+  font: 16px/1.3 "Inter", "Noto Sans", sans-serif;
+  box-shadow: 4px 4px 0 var(--p5-red);
+  transform: skewX(-3deg);
+  color-scheme: light;
+}
+
+.p5r-input:focus {
+  outline: 3px solid var(--p5-red);
+  outline-offset: 1px;
+}
+
+textarea.p5r-input {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.p5r-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 14px;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.p5r-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--p5-red);
+}
+
+.p5r-hint {
+  margin: -6px 0 12px;
+  color: #bbb;
+  font: 13px/1.35 "Inter", "Noto Sans", sans-serif;
+}
+
+.p5r-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.p5r-btn {
+  position: relative;
+  padding: 7px 18px 5px;
+  border: 2px solid var(--p5-white);
+  background: #000;
+  color: var(--p5-white);
+  font: 17px/1.1 var(--p5-font-condensed);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: skewX(-10deg);
+  box-shadow: 3px 3px 0 var(--p5-red);
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.p5r-btn:hover,
+.p5r-btn:focus-visible {
+  background: var(--p5-red);
+  transform: skewX(-10deg) translateY(-2px) rotate(-2deg);
+  outline: none;
+}
+
+.p5r-btn.p5r-primary {
+  background: var(--p5-red);
+  box-shadow: 3px 3px 0 var(--p5-white);
+}
+
+.p5r-btn.p5r-primary:hover {
+  background: var(--p5-red-hot);
+}
+
+.p5r-btn.p5r-danger {
+  border-color: var(--p5-red);
+  color: var(--p5-red-hot);
+}
+
+.p5r-btn.p5r-danger:hover {
+  color: #fff;
+}
+
+.p5r-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Tarjeta de aviso (vista grande) */
+.p5r-card {
+  position: relative;
+  padding: 26px 22px 20px;
+  margin: 4px 0 6px;
+  color: #000;
+  background:
+    var(--p5-halftone-dark) 0 0 / 8px 8px,
+    repeating-linear-gradient(-48deg, transparent 0 22px, rgba(0, 0, 0, 0.18) 22px 30px),
+    var(--p5-red);
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 var(--p5-white);
+  transform: rotate(1.2deg);
+  overflow: hidden;
+}
+
+.p5r-card-kicker {
+  display: inline-block;
+  padding: 2px 12px 0 8px;
+  background: #000;
+  color: var(--p5-white);
+  font: 15px/1.2 var(--p5-font-condensed);
+  letter-spacing: 0.14em;
+  transform: rotate(-3deg);
+}
+
+.p5r-card-title {
+  margin: 14px 0 12px;
+  font-size: 30px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.p5r-card-message {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: var(--p5-white);
+  color: #111;
+  font: 15px/1.45 var(--p5-font-type);
+  white-space: pre-wrap;
+  word-break: break-word;
+  clip-path: var(--p5-jag);
+  transform: rotate(-1deg);
+}
+
+.p5r-card-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.p5r-card-date {
+  padding: 3px 10px 1px;
+  background: #000;
+  color: var(--p5-white);
+  font: 16px/1.2 var(--p5-font-condensed);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: skewX(-10deg);
+}
+
+.p5r-card-count {
+  text-align: right;
+  color: #fff;
+  font-family: var(--p5-font-display);
+  text-shadow: 3px 3px 0 #000;
+  line-height: 0.9;
+}
+
+.p5r-card-count b {
+  display: block;
+  font-size: 64px;
+  font-weight: 400;
+}
+
+.p5r-card-count small {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
+
+.p5r-card-sign {
+  margin-top: 12px;
+  font: 15px/1.2 var(--p5-font-type);
+  text-align: right;
+}
+
+.p5r-card[data-state="past"] {
+  filter: grayscale(0.7);
+}
+
+/* Letras recortadas tipo nota de rescate */
+.p5r-ransom {
+  display: inline;
+}
+
+.p5r-ransom > span {
+  display: inline-block;
+  margin: 0.04em 0.03em;
+  padding: 0.04em 0.14em 0;
+  line-height: 1;
+  white-space: pre;
+}
+
+/* Panel lateral con todas las tarjetas */
+.p5r-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background:
+    var(--p5-halftone) 0 0 / 10px 10px,
+    linear-gradient(170deg, #1a0204, #000 45%);
+  color: var(--p5-white);
+  border-left: 4px solid var(--p5-red);
+  box-shadow: -10px 0 0 rgba(230, 0, 18, 0.35);
+  animation: p5r-panel-in 0.2s ease-out;
+  font-family: var(--p5-font-condensed);
+}
+
+@keyframes p5r-panel-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+.p5r-panel-head {
+  position: relative;
+  padding: 22px 18px 14px;
+  background: linear-gradient(100deg, var(--p5-red) 0 70%, #000 70.3% 72.5%, var(--p5-red-deep) 72.8%);
+  border-bottom: 3px solid #000;
+}
+
+.p5r-panel-head h2 {
+  margin: 0;
+  font: 30px/1 var(--p5-font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transform: skewX(-8deg) rotate(-2deg);
+  text-shadow: 3px 3px 0 #000;
+}
+
+.p5r-panel-head p {
+  margin: 8px 0 0;
+  font: 13px/1.35 "Inter", "Noto Sans", sans-serif;
+}
+
+.p5r-panel-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 18px;
+  border-bottom: 2px solid rgba(230, 0, 18, 0.5);
+}
+
+.p5r-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.p5r-switch input {
+  appearance: none;
+  width: 42px;
+  height: 20px;
+  margin: 0;
+  background: var(--p5-ash);
+  border: 2px solid var(--p5-white);
+  transform: skewX(-12deg);
+  position: relative;
+  cursor: pointer;
+}
+
+.p5r-switch input::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 16px;
+  height: 14px;
+  background: var(--p5-white);
+  transition: left 0.15s ease;
+}
+
+.p5r-switch input:checked {
+  background: var(--p5-red);
+}
+
+.p5r-switch input:checked::after {
+  left: 20px;
+}
+
+.p5r-panel-list {
+  flex: 1;
+  overflow: auto;
+  padding: 14px 18px 24px;
+}
+
+.p5r-empty {
+  margin-top: 30px;
+  text-align: center;
+  font: 15px/1.5 "Inter", "Noto Sans", sans-serif;
+  color: #ccc;
+}
+
+.p5r-empty strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--p5-white);
+  font: 26px/1 var(--p5-font-display);
+  letter-spacing: 0.05em;
+}
+
+.p5r-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 12px 14px 10px;
+  border: 2px solid #000;
+  background: var(--p5-white);
+  color: #000;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--p5-red);
+  transition: transform 0.12s ease;
+}
+
+.p5r-item:nth-child(odd) {
+  transform: rotate(-1deg);
+}
+
+.p5r-item:nth-child(even) {
+  transform: rotate(0.8deg);
+}
+
+.p5r-item:hover,
+.p5r-item:focus-visible {
+  transform: rotate(0) translateX(-4px) scale(1.02);
+  outline: none;
+}
+
+.p5r-item-title {
+  font: 21px/1.15 var(--p5-font-display);
+  letter-spacing: 0.02em;
+  word-break: break-word;
+}
+
+.p5r-item-chat {
+  grid-column: 1;
+  font: 13px/1.3 "Inter", "Noto Sans", sans-serif;
+  color: #444;
+}
+
+.p5r-item-count {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+  padding: 4px 10px 2px;
+  background: #000;
+  color: #fff;
+  font: 22px/1 var(--p5-font-display);
+  text-align: center;
+  transform: skewX(-10deg);
+}
+
+.p5r-item-count small {
+  display: block;
+  font: 11px/1.2 var(--p5-font-condensed);
+  letter-spacing: 0.1em;
+}
+
+.p5r-item[data-state="today"] .p5r-item-count {
+  background: var(--p5-red);
+}
+
+.p5r-item[data-state="past"] {
+  opacity: 0.6;
+  box-shadow: 5px 5px 0 var(--p5-ash);
+}
+
+.p5r-section-title {
+  margin: 8px 0 12px;
+  font: 16px/1 var(--p5-font-condensed);
+  letter-spacing: 0.12em;
+  color: var(--p5-red-hot);
+}
+
+/* Avisos breves: discretos en modo normal, estilo Persona con el tema */
+.p5r-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 10px 18px;
+  background: #3b4a54;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  font: 14px/1.35 "Inter", "Noto Sans", "Segoe UI", sans-serif;
+  transform: translateX(-50%);
+  animation: p5r-fade 0.2s ease-out;
+  pointer-events: none !important;
+}
+
+html.p5r .p5r-toast {
+  padding: 8px 18px 6px;
+  background: #000;
+  border: 2px solid var(--p5-white);
+  border-radius: 0;
+  box-shadow: 5px 5px 0 var(--p5-red);
+  font: 18px/1.2 var(--p5-font-condensed);
+  letter-spacing: 0.05em;
+  transform: translateX(-50%) rotate(-1.5deg);
+  animation: p5r-slam 0.2s ease-out;
+}
+
+/* Transición al modo Persona: ondas de agua que tiñen todo de rojo */
+.p5r-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.p5r-water-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.p5r-transition-water {
+  position: absolute;
+  inset: -6%;
+  filter: url(#p5r-water);
+}
+
+.p5r-transition-flood {
+  position: absolute;
+  inset: 0;
+  background:
+    var(--p5-halftone-dark) 0 0 / 12px 12px,
+    repeating-linear-gradient(-58deg, transparent 0 46px, rgba(0, 0, 0, 0.12) 46px 80px),
+    radial-gradient(circle at 50% 55%, #ff1f3d 0, #e60012 40%, #8f000c 100%);
+  clip-path: circle(0% at 50% 55%);
+}
+
+.p5r-ring {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  width: 60px;
+  height: 60px;
+  margin: -30px;
+  border: 7px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.p5r-transition-title {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  font-size: clamp(34px, 6vw, 72px);
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  opacity: 0;
+  filter: drop-shadow(6px 6px 0 #000);
+}
+
+.p5r-transition-hint {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  padding: 4px 16px 2px;
+  background: #000;
+  color: #fff;
+  font: 20px/1.2 var(--p5-font-condensed);
+  letter-spacing: 0.1em;
+  transform: translateX(-50%) skewX(-10deg);
+  opacity: 0;
+}
+
+.p5r-transition[data-phase="in"] .p5r-transition-flood {
+  animation: p5r-flood-in 1.15s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+
+.p5r-transition[data-phase="in"] .p5r-ring {
+  animation: p5r-ripple 1.3s ease-out forwards;
+}
+
+.p5r-transition[data-phase="in"] .p5r-ring:nth-of-type(3) {
+  animation-delay: 0.18s;
+}
+
+.p5r-transition[data-phase="in"] .p5r-ring:nth-of-type(4) {
+  animation-delay: 0.36s;
+}
+
+.p5r-transition[data-phase="in"] .p5r-transition-title {
+  animation: p5r-title-in 0.4s 0.75s cubic-bezier(0.2, 1.6, 0.4, 1) forwards;
+}
+
+.p5r-transition[data-phase="hold"] .p5r-transition-flood,
+.p5r-transition[data-phase="out"] .p5r-transition-flood {
+  clip-path: circle(150% at 50% 55%);
+}
+
+.p5r-transition[data-phase="hold"] .p5r-transition-title,
+.p5r-transition[data-phase="hold"] .p5r-transition-hint {
+  opacity: 1;
+}
+
+.p5r-transition[data-phase="out"] {
+  pointer-events: none;
+}
+
+.p5r-transition[data-phase="out"] .p5r-transition-flood {
+  animation: p5r-flood-out 1s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+
+.p5r-transition[data-phase="out"] .p5r-transition-title,
+.p5r-transition[data-phase="out"] .p5r-transition-hint {
+  opacity: 1;
+  animation: p5r-fade-out 0.35s ease-in forwards;
+}
+
+@keyframes p5r-flood-in {
+  to {
+    clip-path: circle(150% at 50% 55%);
+  }
+}
+
+@keyframes p5r-flood-out {
+  from {
+    clip-path: circle(150% at 50% 55%);
+  }
+  to {
+    clip-path: circle(0% at 50% 45%);
+  }
+}
+
+@keyframes p5r-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(30);
+    opacity: 0;
+  }
+}
+
+@keyframes p5r-title-in {
+  from {
+    transform: translate(-50%, -50%) rotate(-12deg) scale(1.6);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-4deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes p5r-fade-out {
+  to {
+    opacity: 0;
+  }
+}

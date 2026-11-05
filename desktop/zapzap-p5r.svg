@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Ráfaga roja -->
+  <path d="M64 2 76 26 102 10 98 40 126 44 104 64 124 86 96 90 102 120 76 104 64 126 52 104 26 120 32 90 4 86 24 64 2 44 30 40 26 10 52 26z"
+        fill="#e60012" stroke="#0b0b0b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Globo de chat recortado -->
+  <path d="M24 34 104 26 100 84 62 88 40 106 44 88 28 86z"
+        fill="#0b0b0b" stroke="#f6f4ef" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Antifaz -->
+  <path d="M34 54c8-10 19-9 30-2 11-7 22-8 30 2-2 12-10 18-19 17-5 0-9-3-11-8-2 5-6 8-11 8-9 1-17-5-19-17z"
+        fill="#e60012" stroke="#f6f4ef" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="49" cy="59" rx="7" ry="4.2" fill="#0b0b0b" transform="rotate(12 49 59)"/>
+  <ellipse cx="79" cy="59" rx="7" ry="4.2" fill="#0b0b0b" transform="rotate(-12 79 59)"/>
+</svg>

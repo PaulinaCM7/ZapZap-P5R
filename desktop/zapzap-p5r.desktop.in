@@ -1,0 +1,31 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=ZapZap P5R
+GenericName=WhatsApp (Persona 5)
+Comment=ZapZap con estética Persona 5 Royal y tarjetas de aviso
+Exec="@LAUNCHER@" %u
+Icon=zapzap-p5r
+Terminal=false
+Categories=Network;InstantMessaging;Chat;
+Keywords=whatsapp;zapzap;persona;p5r;
+StartupNotify=true
+SingleMainWindow=true
+X-GNOME-UsesNotifications=true
+Actions=original;safe;update;flatpak;
+
+[Desktop Action original]
+Name=Abrir ZapZap original (sin mod)
+Exec="@LAUNCHER@" --original
+
+[Desktop Action safe]
+Name=Abrir en modo seguro (mod desactivado)
+Exec="@LAUNCHER@" --safe
+
+[Desktop Action update]
+Name=Buscar actualización de ZapZap
+Exec="@LAUNCHER@" --update
+
+[Desktop Action flatpak]
+Name=Abrir ZapZap de Flathub (sesión aparte)
+Exec="@LAUNCHER@" --flatpak
