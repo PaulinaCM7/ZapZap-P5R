@@ -107,6 +107,7 @@ class P5RController(QObject):
         self._icon = QIcon(os.path.join(MOD_DIR, "assets", "p5r-toggle.svg"))
         self._pages = {}
         self._toggle_widgets = []
+        self._gpu_actions = []
         self._styled_windows = []
 
         self._scan_timer = QTimer(self)
@@ -244,6 +245,35 @@ class P5RController(QObject):
             self._install_script(page, account_id)
         self._refresh_toggle_widgets()
         self._refresh_native_style()
+
+    @safe_slot
+    def set_gpu_compat(self, enabled):
+        if not self.state.set_gpu_compat(enabled):
+            return
+        alive = []
+        for action in self._gpu_actions:
+            if _alive(action):
+                action.blockSignals(True)
+                action.setChecked(self.state.gpu_compat)
+                action.blockSignals(False)
+                alive.append(action)
+        self._gpu_actions = alive
+        status = "activada" if self.state.gpu_compat else "desactivada"
+        answer = QMessageBox.question(
+            self.app.activeWindow(),
+            "Compatibilidad gráfica",
+            f"Compatibilidad gráfica {status}.\n\n"
+            "Actívala si ZapZap se traba o se cierra solo. Se aplica al reiniciar;\n"
+            "tu sesión de WhatsApp no cambia.\n\n"
+            "¿Reiniciar ahora?",
+        )
+        if answer != QMessageBox.StandardButton.Yes:
+            return
+        restart = getattr(self.app, "restartApplication", None)
+        if callable(restart) and restart() is not False:
+            return
+        QMessageBox.information(self.app.activeWindow(), "Compatibilidad gráfica",
+                                "No se pudo reiniciar solo: cierra ZapZap P5R y vuelve a abrirlo.")
 
     @safe_slot
     def open_cards_panel(self):
@@ -387,6 +417,14 @@ class P5RController(QObject):
         about_action.triggered.connect(lambda _checked=False: self.show_about())
 
         menu.addAction(theme_action)
+        if sys.platform == "win32":
+            gpu_action = QAction("Compatibilidad gráfica (evita cierres)", menu)
+            gpu_action.setCheckable(True)
+            gpu_action.setChecked(self.state.gpu_compat)
+            gpu_action.setToolTip("Dibuja sin composición por GPU. Se aplica al reiniciar.")
+            gpu_action.triggered.connect(lambda checked: self.set_gpu_compat(checked))
+            self._gpu_actions.append(gpu_action)
+            menu.addAction(gpu_action)
         menu.addSeparator()
         menu.addAction(cards_action)
         menu.addAction(new_card_action)
