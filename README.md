@@ -9,6 +9,59 @@ Fork personalizado de [ZapZap](https://github.com/rafatosta/zapzap) con:
 Capturas de la prueba automática (WhatsApp sin sesión + un chat de ejemplo) en
 [`docs/capturas/`](docs/capturas/).
 
+## Guía rápida (para instalarlo)
+
+Se instala una vez y después **todo se actualiza solo**: ZapZap y este fork.
+
+### Windows
+
+1. Instala **Python 3.10 o superior** desde [python.org](https://www.python.org/downloads/).
+   En el instalador marca **«Add python.exe to PATH»**.
+2. Instala **Git** desde [git-scm.com](https://git-scm.com/download/win) (opciones por defecto).
+3. Abre una terminal (tecla Windows → «Terminal» o «PowerShell») y clona el
+   proyecto en una carpeta que no vayas a mover, por ejemplo tus Documentos:
+
+   ```powershell
+   cd $HOME\Documents
+   git clone <enlace del repositorio> ZapZap-P5R
+   ```
+4. Entra a la carpeta `ZapZap-P5R` y haz **doble clic en `install.cmd`**. La
+   primera vez descarga unos 200 MB (tarda unos minutos).
+5. Abre **ZapZap P5R** desde el menú Inicio y escanea el código QR con tu
+   teléfono: WhatsApp → **Dispositivos vinculados** → Vincular un dispositivo.
+
+### Linux
+
+```bash
+cd ~/Documentos            # o donde quieras dejarlo (no lo muevas después)
+git clone <enlace del repositorio> ZapZap-P5R
+cd ZapZap-P5R
+./install.sh
+```
+
+Abre **ZapZap P5R** desde el menú de aplicaciones y escanea el QR.
+
+### Primer uso
+
+- **Activar la estética:** botón del antifaz en la barra lateral o `Ctrl+Shift+P`.
+- **Tarjetas de aviso:** abre un grupo → menú **Persona 5 → Nueva tarjeta para
+  el chat abierto** → «Enviar al grupo». Los que tengan ZapZap P5R la ven con su
+  cuenta regresiva; se borra sola pasada la fecha.
+- **Si algo se ve raro:** `Ctrl+Shift+P` apaga la estética; menú **Persona 5 →
+  Volver a ZapZap original** abre ZapZap sin el mod (misma sesión).
+
+### Actualizaciones
+
+- **ZapZap** (el proyecto original) se actualiza solo a cada versión estable.
+- **ZapZap P5R** (este fork) se actualiza solo desde el repositorio, si lo
+  instalaste con `git clone`. Si lo copiaste como carpeta o ZIP, no: vuelve a
+  clonarlo con git para tener las mejoras.
+- Se revisa al abrir la app (como mucho cada 12 h) y los cambios se ven la
+  siguiente vez que la abres. Si una actualización falla, se vuelve sola a la
+  versión anterior.
+- Para buscar ya: en el menú de aplicaciones (clic derecho en el ícono, Linux)
+  «Buscar actualización de ZapZap», o `zapzap-p5r --update` / `zapzap-p5r.cmd --update`.
+
 ## Cómo funciona (y por qué se actualiza solo)
 
 ZapZap se instala **desde su código en GitHub**, nativo (sin Flatpak), en su
@@ -26,6 +79,9 @@ modifica** ni un archivo de ZapZap: se engancha al arrancar.
 - **Actualización automática:** al abrir ZapZap P5R se busca en segundo plano
   (como mucho cada 12 h) una versión estable nueva. Se descarga, se prueba que
   carga con el mod y queda lista para la próxima vez que abras la app.
+- **El fork también:** si la carpeta es un clon de git, en esa misma revisión
+  se hace `git pull` (solo avanzar, nunca encima de cambios locales sin
+  guardar). Si la versión nueva del mod no carga, se vuelve a la anterior.
 - **Sin sustos:** si una versión nueva se cae al arrancar, el lanzador vuelve
   solo a la anterior y te avisa. La que falló no se reintenta hasta que pidas
   una actualización a mano.
@@ -35,7 +91,7 @@ modifica** ni un archivo de ZapZap: se engancha al arrancar.
   propia sesión).
 - Si algo del mod falla, se registra el error y ZapZap sigue funcionando normal.
 
-## Instalación
+## Instalación (detalle)
 
 ### Windows
 
@@ -49,11 +105,13 @@ modifica** ni un archivo de ZapZap: se engancha al arrancar.
    powershell -ExecutionPolicy Bypass -File install.ps1
    ```
 
+   (o doble clic en `install.cmd`, que hace lo mismo)
+
    Con `-Autostart` además se abre al iniciar sesión.
 3. Abre **ZapZap P5R** desde el menú Inicio (también hay accesos «original sin
    mod» y «modo seguro»). Desde una terminal: `zapzap-p5r.cmd --help`.
 
-Desinstalar: `powershell -ExecutionPolicy Bypass -File uninstall.ps1`
+Desinstalar: doble clic en `uninstall.cmd` o `powershell -ExecutionPolicy Bypass -File uninstall.ps1`
 (`-Purge` borra también lo descargado y las tarjetas).
 
 ### Linux
@@ -184,6 +242,7 @@ La sesión de WhatsApp del fork y sus ajustes quedan en `~/.config/ZapZap` y
 ```
 zapzap-p5r            Lanzador para Linux (llama a p5r_mod/launcher.py)
 zapzap-p5r.cmd        Lanzador para Windows (desde terminal)
+install.cmd / uninstall.cmd   Doble clic para instalar / quitar en Windows
 zapzap_p5r.py         Punto de entrada del fork
 install.sh / .ps1     Instalan ZapZap desde GitHub y crean los accesos (Linux / Windows)
 uninstall.sh / .ps1   Quitan los accesos (y con --purge / -Purge, lo descargado)

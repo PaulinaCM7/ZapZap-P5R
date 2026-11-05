@@ -100,6 +100,67 @@ class UpdaterTests(unittest.TestCase):
         # Nunca pisa una configuración nativa existente.
         self.assertFalse(self.updater.import_flatpak_settings())
 
+    def _git(self, *args, cwd):
+        import subprocess
+        return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+
+    def _repos(self):
+        """Repositorio «de GitHub» (bare), el clon del compañero y otro para publicar."""
+        base = self.tmp.name
+        origin = os.path.join(base, "origin.git")
+        self._git("init", "--bare", "-q", "-b", "main", origin, cwd=base)
+        author = os.path.join(base, "autor")
+        self._git("clone", "-q", origin, author, cwd=base)
+        for repo in (author,):
+            self._git("config", "user.email", "t@t", cwd=repo)
+            self._git("config", "user.name", "t", cwd=repo)
+        with open(os.path.join(author, "mod.txt"), "w") as handle:
+            handle.write("v1\n")
+        self._git("add", "-A", cwd=author)
+        self._git("commit", "-q", "-m", "v1", cwd=author)
+        self._git("push", "-q", "origin", "main", cwd=author)
+        mate = os.path.join(base, "companero")
+        self._git("clone", "-q", origin, mate, cwd=base)
+        return author, mate
+
+    def _publish(self, author, text):
+        with open(os.path.join(author, "mod.txt"), "w") as handle:
+            handle.write(text)
+        self._git("commit", "-q", "-am", text, cwd=author)
+        self._git("push", "-q", "origin", "main", cwd=author)
+
+    def test_mod_updates_from_git(self):
+        author, mate = self._repos()
+        self.assertEqual(self.updater.update_mod(mate, verify=lambda: None), "al-dia")
+        self._publish(author, "v2\n")
+        self.assertEqual(self.updater.update_mod(mate, verify=lambda: None), "actualizado")
+        self.assertEqual(open(os.path.join(mate, "mod.txt")).read(), "v2\n")
+
+    def test_broken_mod_update_is_reverted(self):
+        author, mate = self._repos()
+        self._publish(author, "roto\n")
+
+        def broken():
+            raise RuntimeError("no carga")
+
+        self.assertEqual(self.updater.update_mod(mate, verify=broken), "revertido")
+        self.assertEqual(open(os.path.join(mate, "mod.txt")).read(), "v1\n")
+
+    def test_local_changes_are_respected(self):
+        author, mate = self._repos()
+        self._publish(author, "v2\n")
+        with open(os.path.join(mate, "mod.txt"), "w") as handle:
+            handle.write("mi cambio\n")
+        self.assertEqual(self.updater.update_mod(mate, verify=lambda: None), "cambios-locales")
+        self.assertEqual(open(os.path.join(mate, "mod.txt")).read(), "mi cambio\n")
+
+    def test_folder_without_git_or_remote(self):
+        plain = os.path.join(self.tmp.name, "copia-zip")
+        os.makedirs(plain)
+        self.assertEqual(self.updater.update_mod(plain), "no-git")
+        self._git("init", "-q", plain, cwd=self.tmp.name)
+        self.assertEqual(self.updater.update_mod(plain), "sin-remoto")
+
     def test_state_file_is_json(self):
         self.updater.save_state({"current": "7.5.1"})
         with open(self.updater.STATE_FILE, encoding="utf-8") as handle:

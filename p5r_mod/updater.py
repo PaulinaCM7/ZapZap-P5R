@@ -92,6 +92,9 @@ def notify(message):
 
 
 def run(cmd, timeout=None, **kwargs):
+    if IS_WINDOWS:
+        # Sin ventanas de consola que parpadeen (el lanzador corre sin consola).
+        kwargs.setdefault("creationflags", subprocess.CREATE_NO_WINDOW)
     return subprocess.run(cmd, check=True, timeout=timeout, text=True, capture_output=True, **kwargs)
 
 
@@ -234,7 +237,15 @@ def export_release(tag):
             handle.write(http_get(TARBALL_URL.format(tag=tag), timeout=300))
         unpacked = os.path.join(staging, "unpacked")
         with tarfile.open(archive) as tar:
-            tar.extractall(unpacked, filter="data")
+            try:
+                tar.extractall(unpacked, filter="data")
+            except TypeError:
+                # Python 3.10/3.11 antiguos no tienen «filter»: se revisan a mano.
+                for member in tar.getmembers():
+                    target_path = os.path.realpath(os.path.join(unpacked, member.name))
+                    if not target_path.startswith(os.path.realpath(unpacked) + os.sep) or member.issym() or member.islnk():
+                        raise RuntimeError(f"Archivo sospechoso en ZapZap {tag}: {member.name}")
+                tar.extractall(unpacked)
         # El archivo trae una carpeta raíz «zapzap-<versión>/».
         roots = os.listdir(unpacked)
         if len(roots) != 1 or not os.path.isdir(os.path.join(unpacked, roots[0], "zapzap")):
@@ -292,6 +303,44 @@ def import_flatpak_settings():
     return True
 
 
+def update_mod(project_dir=PROJECT_DIR, verify=None):
+    """Actualiza el propio ZapZap P5R desde su repositorio git (si es un clon).
+
+    Solo avanza (fast-forward) y solo si no hay cambios locales sin guardar.
+    Si la versión nueva del mod no carga con el ZapZap activo, se vuelve a la
+    anterior. Los cambios se usan la próxima vez que se abre la app.
+    Devuelve: "no-git", "sin-remoto", "cambios-locales", "al-dia",
+    "actualizado" o "revertido".
+    """
+    if not os.path.isdir(os.path.join(project_dir, ".git")) or not shutil.which("git"):
+        return "no-git"
+    git = ["git", "-C", project_dir]
+    # Sin preguntas de usuario/contraseña en segundo plano.
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GCM_INTERACTIVE="never")
+    if "origin" not in run(git + ["remote"], env=env).stdout.split():
+        return "sin-remoto"
+    if run(git + ["status", "--porcelain", "--untracked-files=no"], env=env).stdout.strip():
+        log("ZapZap P5R tiene cambios locales sin guardar: no se actualiza solo")
+        return "cambios-locales"
+    old = run(git + ["rev-parse", "HEAD"], env=env).stdout.strip()
+    run(git + ["pull", "--ff-only", "--quiet"], timeout=180, env=env)
+    new = run(git + ["rev-parse", "HEAD"], env=env).stdout.strip()
+    if new == old:
+        return "al-dia"
+    try:
+        if verify is not None:
+            verify()
+        elif current_dir():
+            verify_release(current_dir())
+    except Exception as error:  # noqa: BLE001 - nunca dejar el mod roto
+        run(git + ["reset", "--hard", old], env=env)
+        log(f"La versión nueva de ZapZap P5R no cargó; se volvió a {old[:8]}: {error}")
+        return "revertido"
+    log(f"ZapZap P5R actualizado: {old[:8]} → {new[:8]}")
+    notify("ZapZap P5R se actualizó. Los cambios se verán la próxima vez que lo abras.")
+    return "actualizado"
+
+
 # ---------------------------------------------------------------- comandos
 def activate(tag, state, reason):
     release_dir = export_release(tag)
@@ -347,6 +396,10 @@ def cmd_update(args):
         os.remove(lock_path)
         lock = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     try:
+        try:
+            update_mod()
+        except (subprocess.SubprocessError, OSError) as error:
+            log(f"No se pudo actualizar ZapZap P5R: {error}")
         tags = fetch_tags()
         state["last_check"] = int(time.time())
         save_state(state)

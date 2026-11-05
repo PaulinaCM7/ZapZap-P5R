@@ -1,6 +1,7 @@
 # Instala ZapZap P5R en Windows: ZapZap desde GitHub (en su propio entorno de
 # Python) + el mod de Persona 5 + accesos directos en el menu Inicio.
 #
+#   Doble clic en install.cmd                                         instala
 #   powershell -ExecutionPolicy Bypass -File install.ps1              instala
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -Autostart   ademas, abrir al iniciar sesion
 #
@@ -19,6 +20,11 @@ if (Get-Command py -ErrorAction SilentlyContinue) {
 }
 if (-not $Python -or -not (Test-Path $Python)) {
     Write-Host "No encontre Python 3. Instalalo desde https://www.python.org/downloads/ (marca 'Add python.exe to PATH')." -ForegroundColor Red
+    exit 1
+}
+& $Python -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Tu Python es muy viejo. Instala Python 3.10 o superior desde https://www.python.org/downloads/" -ForegroundColor Red
     exit 1
 }
 $PythonW = Join-Path (Split-Path $Python) "pythonw.exe"
@@ -54,6 +60,14 @@ if ($Autostart) {
     $Startup = [Environment]::GetFolderPath("Startup")
     New-Shortcut "$Startup\ZapZap P5R.lnk" "--hideStart" "ZapZap P5R al iniciar sesion"
     Write-Host "OK Inicio automatico"
+}
+
+if ((Test-Path "$Here\.git") -and (Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host "OK ZapZap P5R se actualizara solo desde su repositorio (git)"
+} else {
+    Write-Host "Aviso: esta carpeta no es un clon de git (o falta Git), asi que ZapZap P5R" -ForegroundColor Yellow
+    Write-Host "no se actualizara solo. ZapZap si. Para actualizaciones automaticas, instala" -ForegroundColor Yellow
+    Write-Host "Git (https://git-scm.com) y clona el repositorio con 'git clone'." -ForegroundColor Yellow
 }
 
 Write-Host ""

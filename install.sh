@@ -68,6 +68,13 @@ command -v update-desktop-database >/dev/null 2>&1 \
 command -v gtk-update-icon-cache >/dev/null 2>&1 \
     && gtk-update-icon-cache -q -t "$DATA_HOME/icons/hicolor" 2>/dev/null || true
 
+if [ -d "$HERE/.git" ] && command -v git >/dev/null 2>&1; then
+    echo "✓ ZapZap P5R se actualizará solo desde su repositorio (git)"
+else
+    echo "Aviso: esta carpeta no es un clon de git (o falta git): ZapZap P5R no se"
+    echo "  actualizará solo (ZapZap sí). Para eso, clona el repositorio con «git clone»."
+fi
+
 echo
 echo "Listo. Abre «ZapZap P5R» desde el menú de aplicaciones."
 echo "La primera vez escanea el código QR con tu teléfono (WhatsApp → Dispositivos vinculados)."
