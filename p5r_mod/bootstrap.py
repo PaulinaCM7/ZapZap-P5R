@@ -12,6 +12,10 @@ import sys
 logger = logging.getLogger("zapzap-p5r")
 
 DESKTOP_ID = "zapzap-p5r"
+# En Windows la composición por GPU de Qt WebEngine traba la ventana unos
+# segundos y la cierra (access violation) en cuanto WhatsApp dibuja mucho,
+# con o sin el mod. Sin ella va estable y la GPU sigue dibujando lo demás.
+GPU_COMPAT_FLAG = "--disable-gpu-compositing"
 
 
 def _configure_logging():
@@ -111,6 +115,28 @@ def apply_compat_patches():
         logger.exception("No se pudo redirigir el inicio automático; se usa el de ZapZap")
 
 
+def apply_gpu_compat():
+    """Pone o quita la bandera de compatibilidad gráfica según el menú «Persona 5».
+
+    Tiene que correr antes de que ZapZap arranque Qt WebEngine. Al reiniciar
+    desde la app, ZapZap hereda las variables de entorno del proceso anterior:
+    por eso también se quita la bandera cuando la opción está apagada.
+    """
+    if sys.platform != "win32":
+        return
+    try:
+        from p5r_mod.state import P5RState
+
+        enabled = P5RState().gpu_compat
+    except Exception:
+        logger.exception("No se pudo leer la compatibilidad gráfica; queda activada")
+        enabled = True
+    flags = [f for f in os.environ.get("QTWEBENGINE_CHROMIUM_FLAGS", "").split() if f != GPU_COMPAT_FLAG]
+    if enabled:
+        flags.append(GPU_COMPAT_FLAG)
+    os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = " ".join(flags)
+
+
 def install_mod():
     """Arranca el mod justo antes del bucle de eventos (primer ``app.exec()``).
 
@@ -144,6 +170,7 @@ def install_mod():
 def run():
     _configure_logging()
     apply_compat_patches()
+    apply_gpu_compat()
     if mod_disabled():
         logger.warning("Mod desactivado (modo seguro): ZapZap sin estética ni tarjetas")
     else:

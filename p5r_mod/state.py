@@ -79,6 +79,8 @@ class P5RState:
     def __init__(self, path=None):
         self.path = path or os.path.join(state_dir(), "state.json")
         self.theme_enabled = True
+        # Solo Windows: sin composición por GPU (evita cuelgues y cierres).
+        self.gpu_compat = True
         self.accounts = {}
         self.load()
 
@@ -97,6 +99,7 @@ class P5RState:
             return
 
         self.theme_enabled = bool(data.get("theme_enabled", True))
+        self.gpu_compat = bool(data.get("gpu_compat", True))
         accounts = data.get("accounts", {})
         if isinstance(accounts, dict):
             for account_id, entry in accounts.items():
@@ -111,6 +114,7 @@ class P5RState:
         data = {
             "version": STATE_VERSION,
             "theme_enabled": self.theme_enabled,
+            "gpu_compat": self.gpu_compat,
             "accounts": self.accounts,
         }
         folder = os.path.dirname(self.path)
@@ -151,5 +155,13 @@ class P5RState:
         if enabled == self.theme_enabled:
             return False
         self.theme_enabled = enabled
+        self.save()
+        return True
+
+    def set_gpu_compat(self, enabled):
+        enabled = bool(enabled)
+        if enabled == self.gpu_compat:
+            return False
+        self.gpu_compat = enabled
         self.save()
         return True
