@@ -13,6 +13,10 @@ Capturas de la prueba automática (WhatsApp sin sesión + un chat de ejemplo) en
 
 Se instala una vez y después **todo se actualiza solo**: ZapZap y este fork.
 
+El repositorio es **privado**: pide acceso al dueño (te llega una invitación de
+GitHub por correo; acéptala). La primera vez que clones, Git te pedirá iniciar
+sesión en GitHub; después las actualizaciones se bajan solas.
+
 ### Windows
 
 1. Instala **Python 3.10 o superior** desde [python.org](https://www.python.org/downloads/).
@@ -23,7 +27,7 @@ Se instala una vez y después **todo se actualiza solo**: ZapZap y este fork.
 
    ```powershell
    cd $HOME\Documents
-   git clone <enlace del repositorio> ZapZap-P5R
+   git clone https://github.com/fer30jp-star/ZapZap-P5R.git ZapZap-P5R
    ```
 4. Entra a la carpeta `ZapZap-P5R` y haz **doble clic en `install.cmd`**. La
    primera vez descarga unos 200 MB (tarda unos minutos).
@@ -34,7 +38,7 @@ Se instala una vez y después **todo se actualiza solo**: ZapZap y este fork.
 
 ```bash
 cd ~/Documentos            # o donde quieras dejarlo (no lo muevas después)
-git clone <enlace del repositorio> ZapZap-P5R
+git clone https://github.com/fer30jp-star/ZapZap-P5R.git ZapZap-P5R
 cd ZapZap-P5R
 ./install.sh
 ```
