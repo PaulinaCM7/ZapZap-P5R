@@ -32,7 +32,7 @@ if (-not (Test-Path $PythonW)) { $PythonW = $Python }
 
 Write-Host "-> ZapZap desde GitHub (la primera vez descarga PyQt6, ~200 MB)..."
 & $Python "$Here\p5r_mod\updater.py" install
-if ($LASTEXITCODE -ne 0) { Write-Host "Fallo la instalacion. Revisa $env:LOCALAPPDATA\zapzap-p5r\updater.log" -ForegroundColor Red; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Host "Fallo la instalacion. Revisa updater.log (ubicacion: '$Python' p5r_mod\updater.py status)" -ForegroundColor Red; exit 1 }
 & $Python "$Here\p5r_mod\updater.py" check
 if ($LASTEXITCODE -ne 0) { exit 1 }
 

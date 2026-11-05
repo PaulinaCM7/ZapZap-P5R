@@ -16,5 +16,8 @@ Write-Host "Accesos directos quitados."
 
 if ($Purge) {
     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\zapzap-p5r", "$env:LOCALAPPDATA\ZapZap-P5R"
+    # Python de Microsoft Store: sus datos viven en la carpeta del paquete.
+    Get-ChildItem -Directory -ErrorAction SilentlyContinue "$env:LOCALAPPDATA\Packages\PythonSoftwareFoundation.Python.*" |
+        ForEach-Object { Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$($_.FullName)\LocalCache\Local\zapzap-p5r", "$($_.FullName)\LocalCache\Local\ZapZap-P5R" }
     Write-Host "Borrado el ZapZap descargado y el estado del mod."
 }

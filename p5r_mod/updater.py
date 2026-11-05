@@ -41,6 +41,13 @@ TARBALL_URL = "https://codeload.github.com/rafatosta/zapzap/tar.gz/refs/tags/{ta
 USER_AGENT = "zapzap-p5r-updater"
 if IS_WINDOWS:
     DATA_HOME = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~\\AppData\\Local")
+    # El Python de Microsoft Store redirige en secreto lo que escribe en AppData
+    # a su carpeta del paquete; otros programas (el python.exe del venv) no lo
+    # ven. Usamos esa carpeta real directamente para que todos vean lo mismo.
+    _store = os.path.basename(sys.base_prefix)
+    if "\\WindowsApps\\" in sys.base_prefix and "__" in _store:
+        _family = _store.split("_")[0] + "_" + _store.rsplit("__", 1)[1]
+        DATA_HOME = os.path.join(DATA_HOME, "Packages", _family, "LocalCache", "Local")
     CONFIG_HOME = DATA_HOME
 else:
     DATA_HOME = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
